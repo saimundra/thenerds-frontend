@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import AppLogo from '@/components/ui/AppLogo';
 import Icon from '@/components/ui/AppIcon';
 import PostsTable from './PostsTable';
 import PostEditor from './PostEditor';
@@ -215,11 +214,10 @@ export default function DashboardLayout() {
         lg:translate-x-0 lg:static lg:flex
       `}
       >
-        {/* Logo */}
+        {/* Brand */}
         <div className="h-16 flex items-center px-5 border-b border-border shrink-0">
-          <Link href="/homepage" className="flex items-center gap-2">
-            <AppLogo size={28} />
-            <span className="font-bold text-sm text-foreground">
+          <Link href="/homepage" className="flex items-center">
+            <span className="font-sans font-800 text-base tracking-tight text-foreground">
               The<span className="text-primary">.</span>Nerds
             </span>
           </Link>
