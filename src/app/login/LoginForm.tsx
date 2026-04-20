@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { clearTokens, setTokens } from '@/lib/auth';
 import { apiFetch, getApiBaseUrl, getReadableError } from '@/lib/api';
-import AppLogo from '@/components/ui/AppLogo';
 import Icon from '@/components/ui/AppIcon';
 
 interface MeResponse {
@@ -87,14 +86,11 @@ export default function LoginForm() {
     <main className="min-h-screen bg-background pt-24 px-6 pb-10">
       <div className="max-w-md mx-auto">
         <div className="rounded-2xl border border-border bg-card p-7 sm:p-8 shadow-xl">
-          <div className="flex items-center gap-3 mb-6">
-            <AppLogo size={34} />
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
-                Dashboard
-              </p>
-              <h1 className="text-xl font-extrabold text-foreground">Sign in to The.Nerds</h1>
-            </div>
+          <div className="mb-6">
+            <h1 className="font-sans font-800 text-2xl tracking-tight text-foreground">
+              The<span className="text-primary">.</span>Nerds
+            </h1>
+            <p className="mt-1 text-sm font-semibold text-muted-foreground">Sign in to dashboard</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
