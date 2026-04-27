@@ -47,6 +47,12 @@ interface AdminPanelCache {
   forbidden: boolean;
 }
 
+const REPORT_CATEGORIES = new Set(['nepse', 'forex', 'smart money concepts']);
+
+function isReportCategory(category: string) {
+  return REPORT_CATEGORIES.has((category || '').trim().toLowerCase());
+}
+
 function readAdminPanelCache(): AdminPanelCache | null {
   if (typeof window === 'undefined') {
     return null;
@@ -97,6 +103,26 @@ export default function AdminPanelPage() {
   const [editingPostId, setEditingPostId] = React.useState<number | null>(null);
   const [editTitle, setEditTitle] = React.useState('');
   const [editStatus, setEditStatus] = React.useState<'published' | 'draft'>('draft');
+  const [postTypeFilter, setPostTypeFilter] = React.useState<'all' | 'articles' | 'reports'>('all');
+
+  const filteredPosts = React.useMemo(() => {
+    if (postTypeFilter === 'articles') {
+      return posts.filter((post) => !isReportCategory(post.category));
+    }
+    if (postTypeFilter === 'reports') {
+      return posts.filter((post) => isReportCategory(post.category));
+    }
+    return posts;
+  }, [posts, postTypeFilter]);
+
+  const articleCount = React.useMemo(
+    () => posts.filter((post) => !isReportCategory(post.category)).length,
+    [posts]
+  );
+  const reportCount = React.useMemo(
+    () => posts.filter((post) => isReportCategory(post.category)).length,
+    [posts]
+  );
 
   const loadData = React.useCallback(async () => {
     try {
@@ -123,7 +149,12 @@ export default function AdminPanelPage() {
       });
       setError(null);
     } catch (err) {
-      setError(getReadableError(err, 'Failed to load admin data. Please sign in as an admin user.'));
+      setError(
+        getReadableError(
+          err,
+          'Failed to load admin data (/auth/me, /users, /posts). Please sign in as an admin user.'
+        )
+      );
     } finally {
       setLoading(false);
     }
@@ -160,7 +191,7 @@ export default function AdminPanelPage() {
       setUsers((prev) => [created, ...prev]);
       setForm(initialForm);
     } catch (err) {
-      setError(getReadableError(err, 'Could not create user.'));
+      setError(getReadableError(err, 'Could not create user (/users).'));
     } finally {
       setSavingUser(false);
     }
@@ -266,7 +297,7 @@ export default function AdminPanelPage() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-1">Admin Panel</p>
-            <h1 className="text-2xl font-extrabold text-foreground">User & Blog Management</h1>
+            <h1 className="text-2xl font-extrabold text-foreground">User & Content Management</h1>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -403,9 +434,35 @@ export default function AdminPanelPage() {
         </section>
 
         <section className="rounded-xl border border-border bg-card p-5">
-          <h2 className="text-lg font-bold text-foreground mb-4">Blog Posts</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div>
+              <h2 className="text-lg font-bold text-foreground">Articles & Reports</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {articleCount} articles • {reportCount} reports
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              {([
+                { id: 'all', label: 'All' },
+                { id: 'articles', label: 'Articles' },
+                { id: 'reports', label: 'Reports' },
+              ] as const).map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setPostTypeFilter(item.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-colors ${
+                    postTypeFilter === item.id
+                      ? 'bg-primary text-white'
+                      : 'bg-background border border-border text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="space-y-3">
-            {posts.map((post) => (
+            {filteredPosts.map((post) => (
               <div
                 key={post.id}
                 className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-3 items-center rounded-lg border border-border px-3 py-3"
@@ -421,7 +478,7 @@ export default function AdminPanelPage() {
                     <p className="text-sm font-semibold text-foreground">{post.title}</p>
                   )}
                   <p className="text-xs text-muted-foreground mt-1">
-                    {post.category} • {post.author} • {post.views.toLocaleString()} views
+                    {isReportCategory(post.category) ? 'Report' : 'Article'} • {post.category} • {post.author} • {post.views.toLocaleString()} views
                   </p>
                 </div>
 
@@ -474,6 +531,11 @@ export default function AdminPanelPage() {
                 </div>
               </div>
             ))}
+            {filteredPosts.length === 0 && (
+              <div className="rounded-lg border border-border px-3 py-8 text-center text-sm text-muted-foreground">
+                No {postTypeFilter === 'all' ? 'content' : postTypeFilter} found.
+              </div>
+            )}
           </div>
         </section>
       </div>

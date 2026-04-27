@@ -10,9 +10,22 @@ interface Props {
   onEdit: (post: Post) => void;
   onDelete: (id: string) => void;
   onNewPost: () => void;
+  title?: string;
+  subtitle?: string;
+  newButtonLabel?: string;
+  emptyLabel?: string;
 }
 
-export default function PostsTable({ posts, onEdit, onDelete, onNewPost }: Props) {
+export default function PostsTable({
+  posts,
+  onEdit,
+  onDelete,
+  onNewPost,
+  title = 'All Posts',
+  subtitle,
+  newButtonLabel = 'New Post',
+  emptyLabel = 'No posts found',
+}: Props) {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'published' | 'draft'>('all');
@@ -29,14 +42,16 @@ export default function PostsTable({ posts, onEdit, onDelete, onNewPost }: Props
     <div className="space-y-5">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-extrabold text-foreground">All Posts</h2>
-          <p className="text-sm text-muted-foreground">{posts.length} total articles</p>
+          <h2 className="text-xl font-extrabold text-foreground">{title}</h2>
+          <p className="text-sm text-muted-foreground">
+            {subtitle ?? `${posts.length} total item${posts.length === 1 ? '' : 's'}`}
+          </p>
         </div>
         <button
           onClick={onNewPost}
           className="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-accent transition-colors shrink-0"
         >
-          <Icon name="PlusIcon" size={16} /> New Post
+          <Icon name="PlusIcon" size={16} /> {newButtonLabel}
         </button>
       </div>
 
@@ -199,7 +214,7 @@ export default function PostsTable({ posts, onEdit, onDelete, onNewPost }: Props
                 size={32}
                 className="text-muted-foreground/30 mx-auto mb-3"
               />
-              <p className="text-sm font-medium text-muted-foreground">No posts found</p>
+              <p className="text-sm font-medium text-muted-foreground">{emptyLabel}</p>
             </div>
           )}
         </div>

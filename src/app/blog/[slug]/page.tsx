@@ -6,7 +6,17 @@ import Footer from '@/components/Footer';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api';
+function resolveServerApiBaseUrl() {
+  const fromPublicEnv = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (fromPublicEnv && /^https?:\/\//i.test(fromPublicEnv)) {
+    return fromPublicEnv.replace(/\/+$/, '');
+  }
+
+  const backendOrigin = process.env.NEXT_BACKEND_ORIGIN || 'http://127.0.0.1:8000';
+  return `${backendOrigin.replace(/\/+$/, '')}/api`;
+}
+
+const API_BASE_URL = resolveServerApiBaseUrl();
 
 type ApiPost = {
   slug: string;
@@ -22,7 +32,7 @@ type ApiPost = {
 };
 
 async function fetchPostBySlug(slug: string): Promise<ApiPost | null> {
-  const response = await fetch(`${API_BASE_URL}/posts/`, {
+  const response = await fetch(`${API_BASE_URL}/posts`, {
     cache: 'no-store',
   });
 

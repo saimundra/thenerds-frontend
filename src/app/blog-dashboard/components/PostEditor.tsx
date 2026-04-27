@@ -9,13 +9,17 @@ interface Props {
   post: Post | null;
   currentUsername: string;
   canEditAuthor: boolean;
+  defaultCategory?: string;
   onSave: (post: Post) => void;
   onCancel: () => void;
 }
 
 const categories = [
-  'Financial Research',
+  'NEPSE',
+  'Forex',
+  'Smart Money Concepts',
   'Market Analysis',
+  'Financial Research',
   'Data Analytics',
   'Competitive Intel',
   'Macro',
@@ -24,7 +28,7 @@ const categories = [
 const emptyPost: Omit<Post, 'id' | 'views'> = {
   title: '',
   slug: '',
-  category: 'Market Analysis',
+  category: 'NEPSE',
   status: 'draft',
   author: '',
   date: 'Apr 19, 2026',
@@ -49,11 +53,14 @@ export default function PostEditor({
   post,
   currentUsername,
   canEditAuthor,
+  defaultCategory,
   onSave,
   onCancel,
 }: Props) {
   const [form, setForm] = useState<Omit<Post, 'id' | 'views'>>(
-    post ? { ...post } : { ...emptyPost, author: currentUsername }
+    post
+      ? { ...post }
+      : { ...emptyPost, category: defaultCategory || emptyPost.category, author: currentUsername }
   );
   const [activeTab, setActiveTab] = useState<'content' | 'seo' | 'preview'>('content');
   const [charCount, setCharCount] = useState({ metaTitle: 0, metaDescription: 0 });
@@ -70,6 +77,12 @@ export default function PostEditor({
       setForm((prev) => ({ ...prev, author: prev.author || currentUsername }));
     }
   }, [post, currentUsername]);
+
+  useEffect(() => {
+    if (!post && defaultCategory) {
+      setForm((prev) => ({ ...prev, category: defaultCategory }));
+    }
+  }, [post, defaultCategory]);
 
   const update = (field: keyof typeof form, value: string) => {
     setForm((prev) => {

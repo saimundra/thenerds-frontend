@@ -29,10 +29,10 @@ const services = [
   },
   {
     id: 'data-analytics',
-    title: 'Data Analytics',
+    title: 'Smart money concept',
     description:
-      'Quantitative modeling across structured and alternative datasets. From NLP sentiment analysis to time-series forecasting.',
-    tags: ['Quant Modeling', 'Alt Data', 'NLP'],
+      'We focus on institutional trading logic — liquidity, order blocks, market structure, and manipulation zones',
+    tags: ['market structure', 'liquidity', 'edge'],
     stat: '2.4B+',
     statLabel: 'Data points monthly',
     image: null,
@@ -42,10 +42,10 @@ const services = [
   },
   {
     id: 'financial-research',
-    title: 'Financial Research',
+    title: 'NEPSE',
     description:
-      'Equity analysis, macro intelligence, and earnings modeling with institutional rigor.',
-    tags: ['Equity', 'Macro', 'Earnings'],
+      'We break down the Nepal Stock Exchange with a strategic lens — combining technical analysis, market sentiment, and trend behavior.',
+    tags: ['equity', 'invest', 'earnings'],
     stat: '94.7%',
     statLabel: 'Forecast accuracy',
     image: null,
@@ -55,10 +55,10 @@ const services = [
   },
   {
     id: 'competitive-intel',
-    title: 'Competitive Intel',
+    title: 'Forex',
     description:
-      "Landscape mapping and competitive positioning analysis. Know your rivals' moves before they make them.",
-    tags: ['Landscape', 'Positioning', 'Win/Loss'],
+      'From price action to macro understanding, we guide you through Forex with structured learning and real-world application',
+    tags: ['rading', 'currency', 'winloss'],
     stat: '120+',
     statLabel: 'Industries covered',
     image: null,
@@ -190,8 +190,8 @@ export default function ServicesSection() {
                 <svg viewBox="0 0 200 80" className="w-full h-20" aria-hidden="true">
                   <defs>
                     <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#2563EB" stopOpacity="0.3" />
-                      <stop offset="100%" stopColor="#2563EB" stopOpacity="0" />
+                      <stop offset="0%" stopColor="#008000" stopOpacity="0.3" />
+                      <stop offset="100%" stopColor="#008000" stopOpacity="0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -201,7 +201,7 @@ export default function ServicesSection() {
                   <path
                     d="M0 70 L20 60 L40 65 L60 45 L80 50 L100 30 L120 35 L140 20 L160 25 L180 10 L200 15"
                     fill="none"
-                    stroke="#2563EB"
+                    stroke="#008000"
                     strokeWidth="2"
                     strokeLinecap="round"
                   />

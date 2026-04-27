@@ -10,7 +10,13 @@ import DashboardStats from './DashboardStats';
 import { apiFetch, getReadableError } from '@/lib/api';
 import { clearTokens } from '@/lib/auth';
 
-type View = 'overview' | 'posts' | 'new-post' | 'edit-post';
+type View = 'overview' | 'articles' | 'reports' | 'new-post' | 'edit-post';
+
+const REPORT_CATEGORIES = new Set(['nepse', 'forex', 'smart money concepts']);
+
+function isReportCategory(category: string) {
+  return REPORT_CATEGORIES.has((category || '').trim().toLowerCase());
+}
 
 export interface Post {
   id: string;
@@ -33,8 +39,9 @@ export interface Post {
 
 const navItems = [
   { id: 'overview', label: 'Overview', icon: 'Squares2X2Icon' },
-  { id: 'posts', label: 'All Posts', icon: 'DocumentTextIcon' },
-  { id: 'new-post', label: 'New Post', icon: 'PlusCircleIcon' },
+  { id: 'articles', label: 'Articles', icon: 'DocumentTextIcon' },
+  { id: 'reports', label: 'Reports', icon: 'ChartPieIcon' },
+  { id: 'new-post', label: 'New Content', icon: 'PlusCircleIcon' },
 ];
 
 export default function DashboardLayout() {
@@ -42,6 +49,7 @@ export default function DashboardLayout() {
   const [view, setView] = useState<View>('overview');
   const [posts, setPosts] = useState<Post[]>([]);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [editorDefaultCategory, setEditorDefaultCategory] = useState<string>('NEPSE');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [forbidden, setForbidden] = useState(false);
@@ -165,7 +173,7 @@ export default function DashboardLayout() {
       }
 
       setError(null);
-      setView('posts');
+      setView(isReportCategory(post.category) ? 'reports' : 'articles');
       setEditingPost(null);
     } catch (err) {
       setError(getReadableError(err, 'Save failed. Please check your inputs and try again.'));
@@ -177,11 +185,21 @@ export default function DashboardLayout() {
     router.push('/login');
   };
 
-  const handleNewPost = () => {
+  const handleNewPost = (category = 'NEPSE') => {
+    setEditorDefaultCategory(category);
     setEditingPost(null);
     setView('new-post');
     setSidebarOpen(false);
   };
+
+  const articlePosts = React.useMemo(
+    () => posts.filter((post) => !isReportCategory(post.category)),
+    [posts]
+  );
+  const reportPosts = React.useMemo(
+    () => posts.filter((post) => isReportCategory(post.category)),
+    [posts]
+  );
 
   if (forbidden) {
     return (
@@ -236,7 +254,8 @@ export default function DashboardLayout() {
                 setSidebarOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
-                view === item.id || (view === 'edit-post' && item.id === 'posts')
+                view === item.id ||
+                (view === 'edit-post' && item.id === (editingPost && isReportCategory(editingPost.category) ? 'reports' : 'articles'))
                   ? 'bg-primary/15 text-primary'
                   : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
               }`}
@@ -288,7 +307,13 @@ export default function DashboardLayout() {
             </button>
             <div>
               <p className="text-sm font-bold text-foreground capitalize">
-                {view === 'edit-post' ? 'Edit Post' : view === 'new-post' ? 'New Post' : view}
+                {view === 'edit-post'
+                  ? 'Edit Content'
+                  : view === 'new-post'
+                    ? isReportCategory(editorDefaultCategory)
+                      ? 'New Report'
+                      : 'New Article'
+                    : view}
               </p>
               <p className="text-[10px] text-muted-foreground hidden sm:block">
                 Blog Content Management
@@ -297,11 +322,11 @@ export default function DashboardLayout() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={handleNewPost}
+              onClick={() => handleNewPost(view === 'reports' ? 'NEPSE' : 'Market Analysis')}
               className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-accent transition-colors"
             >
               <Icon name="PlusIcon" size={14} />
-              <span className="hidden sm:inline">New Post</span>
+              <span className="hidden sm:inline">{view === 'reports' ? 'New Report' : 'New Content'}</span>
             </button>
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
               <Icon name="UserIcon" size={16} className="text-primary" />
@@ -326,16 +351,32 @@ export default function DashboardLayout() {
           {view === 'overview' && (
             <DashboardStats
               posts={posts}
-              onNewPost={handleNewPost}
-              onViewPosts={() => setView('posts')}
+              onNewPost={() => handleNewPost('Market Analysis')}
+              onViewPosts={() => setView('articles')}
             />
           )}
-          {view === 'posts' && (
+          {view === 'articles' && (
             <PostsTable
-              posts={posts}
+              posts={articlePosts}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              onNewPost={handleNewPost}
+              onNewPost={() => handleNewPost('Market Analysis')}
+              title="Articles"
+              subtitle={`${articlePosts.length} total article${articlePosts.length === 1 ? '' : 's'}`}
+              newButtonLabel="New Article"
+              emptyLabel="No articles found"
+            />
+          )}
+          {view === 'reports' && (
+            <PostsTable
+              posts={reportPosts}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onNewPost={() => handleNewPost('NEPSE')}
+              title="Reports"
+              subtitle={`${reportPosts.length} total report${reportPosts.length === 1 ? '' : 's'}`}
+              newButtonLabel="New Report"
+              emptyLabel="No reports found"
             />
           )}
           {(view === 'new-post' || view === 'edit-post') && (
@@ -343,9 +384,10 @@ export default function DashboardLayout() {
               post={editingPost}
               currentUsername={currentUsername}
               canEditAuthor={currentUserIsAdmin}
+              defaultCategory={editorDefaultCategory}
               onSave={handleSave}
               onCancel={() => {
-                setView('posts');
+                setView(editingPost && isReportCategory(editingPost.category) ? 'reports' : 'articles');
                 setEditingPost(null);
               }}
             />

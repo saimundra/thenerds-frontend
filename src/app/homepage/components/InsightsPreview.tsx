@@ -67,17 +67,17 @@ export default function InsightsPreview() {
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-12">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-2">
-              Latest Insights
+              Enterprise clients(Across globe)
             </p>
             <h2 className="text-2xl lg:text-3xl font-extrabold text-foreground">
-              Research worth reading.
+              Articles worth reading
             </h2>
           </div>
           <Link
             href="/blog"
             className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors shrink-0"
           >
-            View all research <Icon name="ArrowRightIcon" size={14} />
+            View all articles <Icon name="ArrowRightIcon" size={14} />
           </Link>
         </div>
 
@@ -129,7 +129,7 @@ export default function InsightsPreview() {
 
         {loading && <p className="text-sm text-muted-foreground mt-4">Loading insights...</p>}
         {!loading && posts.length === 0 && (
-          <p className="text-sm text-muted-foreground mt-4">No insights available yet.</p>
+          <p className="text-sm text-muted-foreground mt-4">Articles lates post to be done</p>
         )}
       </div>
     </section>

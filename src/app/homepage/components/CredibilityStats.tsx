@@ -8,7 +8,7 @@ const stats = [
     value: 1240,
     suffix: '+',
     label: 'Research Reports',
-    description: 'Published since 2019',
+    description: 'Published since 2026',
     icon: 'DocumentChartBarIcon',
   },
   {
@@ -62,7 +62,7 @@ function StatCard({ stat, animate }: { stat: (typeof stats)[0]; animate: boolean
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse at 50% 0%, rgba(37,99,235,0.06) 0%, transparent 70%)',
+            'radial-gradient(ellipse at 50% 0%, rgba(0,128,0,0.06) 0%, transparent 70%)',
         }}
         aria-hidden="true"
       />

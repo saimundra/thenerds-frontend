@@ -18,7 +18,7 @@ export default function CTASection() {
             aria-hidden="true"
             style={{
               background:
-                'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(37,99,235,0.12) 0%, transparent 70%)',
+                'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0,128,0,0.12) 0%, transparent 70%)',
             }}
           />
           <div
@@ -28,7 +28,7 @@ export default function CTASection() {
 
           <div className="relative z-10">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-4">
-              Work With Us
+              Learn with us
             </p>
             <h2 className="text-3xl lg:text-5xl font-extrabold text-foreground mb-4 leading-tight">
               Ready to make
@@ -42,11 +42,13 @@ export default function CTASection() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
               <Link
-                href="mailto:research@thenerds.io"
+                href="https://discord.com/invite/xJVmq7XYA"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-lg text-sm font-bold hover:bg-accent transition-all blue-glow"
               >
-                <Icon name="EnvelopeIcon" size={16} />
-                research@thenerds.io
+                <Icon name="ChatBubbleLeftRightIcon" size={16} />
+                Join Our Discord
               </Link>
               <Link
                 href="/blog"

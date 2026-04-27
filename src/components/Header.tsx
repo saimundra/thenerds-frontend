@@ -20,28 +20,20 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    label: 'Research',
+    label: 'Reports',
     dropdown: [
       {
-        label: 'Market Analysis',
-        href: '/homepage#services',
-        description: 'Deep-dive sector reports',
-      },
-      {
-        label: 'Financial Research',
-        href: '/homepage#services',
+        label: 'NEPSE',
+        href: '/reports/nepse',
         description: 'Equity & macro intelligence',
       },
-      { label: 'Competitive Intel', href: '/homepage#services', description: 'Landscape mapping' },
-      { label: 'Data Analytics', href: '/homepage#services', description: 'Quantitative modeling' },
+      { label: 'Forex', href: '/reports/forex', description: 'Landscape mapping' },
+      { label: 'Smart Money Concepts', href: '/reports/smc', description: 'Quantitative modeling' },
     ],
   },
   {
-    label: 'Insights',
-    dropdown: [
-      { label: 'Blog', href: '/blog', description: 'Analysis & commentary' },
-      { label: 'Reports', href: '/blog', description: 'Published research' },
-    ],
+    label: 'Articles',
+    href: '/blog',
   },
   { label: 'About', href: '/homepage#about' },
   { label: 'Contact', href: '/homepage#contact' },
@@ -221,10 +213,12 @@ export default function Header() {
               </div>
             )}
             <Link
-              href="/homepage#contact"
+              href="https://discord.com/invite/xJVmq7XYA"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2 rounded-lg text-sm font-semibold hover:bg-accent transition-colors"
             >
-              Get Research
+              Join the Community
               <Icon name="ArrowRightIcon" size={14} />
             </Link>
           </div>
@@ -314,11 +308,13 @@ export default function Header() {
               </>
             )}
             <Link
-              href="/homepage#contact"
+              href="https://discord.com/invite/xJVmq7XYA"
+              target="_blank"
+              rel="noopener noreferrer"
               className="block w-full text-center py-3 bg-primary text-primary-foreground rounded-lg text-sm font-semibold hover:bg-accent transition-colors"
               onClick={() => setMobileOpen(false)}
             >
-              Get Research
+              Join the Community
             </Link>
           </div>
         </div>

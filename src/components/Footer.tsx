@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import AppLogo from '@/components/ui/AppLogo';
 import Icon from '@/components/ui/AppIcon';
 import { isAuthenticated } from '@/lib/auth';
 
@@ -21,7 +20,6 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo + Brand */}
           <Link href="/homepage" className="flex items-center gap-2.5">
-            <AppLogo size={28} />
             <span className="font-sans font-bold text-base tracking-tight text-foreground">
               The<span className="text-primary">.</span>Nerds
             </span>
@@ -90,7 +88,7 @@ export default function Footer() {
         {/* Legal row */}
         <div className="mt-8 pt-6 border-t border-border/30 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-muted-foreground/60">
-            Market research & data analytics. Not financial advice.
+            join/learn/trade . Not financial advice
           </p>
           <div className="flex items-center gap-6">
             <Link

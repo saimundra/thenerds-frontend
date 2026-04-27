@@ -1,6 +1,37 @@
 import { clearTokens, getAccessToken, getRefreshToken, setTokens } from './auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api';
+function resolveApiBaseUrl() {
+  if (process.env.NEXT_PUBLIC_API_BASE_URL) {
+    return process.env.NEXT_PUBLIC_API_BASE_URL;
+  }
+
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://127.0.0.1:8000/api';
+    }
+  }
+
+  return '/api';
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
+
+function normalizeApiPath(path: string): string {
+  const [pathname, query] = path.split('?');
+  const trimmedPath = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+  return query === undefined ? trimmedPath : `${trimmedPath}?${query}`;
+}
+
+async function requestJson(url: string, options: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, options);
+  } catch {
+    throw new Error(
+      `Network error while requesting ${url}. Make sure frontend and backend servers are running.`
+    );
+  }
+}
 
 function extractMessageFromPayload(payload: unknown): string | null {
   if (typeof payload === 'string') {
@@ -90,7 +121,7 @@ async function refreshAccessToken() {
   const refresh = getRefreshToken();
   if (!refresh) return null;
 
-  const response = await fetch(`${API_BASE_URL}/auth/refresh/`, {
+  const response = await requestJson(`${API_BASE_URL}/auth/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refresh }),
@@ -110,6 +141,7 @@ async function refreshAccessToken() {
 }
 
 export async function apiFetch(path: string, options: RequestInit = {}) {
+  const normalizedPath = normalizeApiPath(path);
   const access = getAccessToken();
   const headers = new Headers(options.headers || {});
   if (!headers.has('Content-Type') && options.body) {
@@ -119,7 +151,7 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
     headers.set('Authorization', `Bearer ${access}`);
   }
 
-  let response = await fetch(`${API_BASE_URL}${path}`, {
+  let response = await requestJson(`${API_BASE_URL}${normalizedPath}`, {
     ...options,
     headers,
   });
@@ -128,7 +160,7 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
     const refreshed = await refreshAccessToken();
     if (refreshed) {
       headers.set('Authorization', `Bearer ${refreshed}`);
-      response = await fetch(`${API_BASE_URL}${path}`, {
+      response = await requestJson(`${API_BASE_URL}${normalizedPath}`, {
         ...options,
         headers,
       });
