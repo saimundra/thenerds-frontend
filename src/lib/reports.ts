@@ -45,31 +45,40 @@ function resolveServerApiBaseUrl() {
 }
 
 export async function fetchPublishedReports(categoryKey?: ReportCategoryKey): Promise<ReportPost[]> {
-  const response = await fetch(`${resolveServerApiBaseUrl()}/posts`, {
-    cache: 'no-store',
-  });
+  try {
+    const response = await fetch(`${resolveServerApiBaseUrl()}/posts`, {
+      cache: 'no-store',
+    });
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return [];
+    }
+
+    const data: unknown = await response.json();
+    if (!Array.isArray(data)) {
+      return [];
+    }
+
+    const items = data as ReportPost[];
+    const expectedCategory = categoryKey ? normalizeCategory(REPORT_CATEGORY_LABELS[categoryKey]) : null;
+
+    return items.filter((item) => {
+      if (item.status !== 'published') {
+        return false;
+      }
+
+      const itemCategory = normalizeCategory(item.category || '');
+      if (!isReportCategory(itemCategory)) {
+        return false;
+      }
+
+      if (!expectedCategory) {
+        return true;
+      }
+
+      return itemCategory === expectedCategory;
+    });
+  } catch {
     return [];
   }
-
-  const items = (await response.json()) as ReportPost[];
-  const expectedCategory = categoryKey ? normalizeCategory(REPORT_CATEGORY_LABELS[categoryKey]) : null;
-
-  return items.filter((item) => {
-    if (item.status !== 'published') {
-      return false;
-    }
-
-    const itemCategory = normalizeCategory(item.category || '');
-    if (!isReportCategory(itemCategory)) {
-      return false;
-    }
-
-    if (!expectedCategory) {
-      return true;
-    }
-
-    return itemCategory === expectedCategory;
-  });
 }
